@@ -1,0 +1,160 @@
+openapi: 3.0.0
+info:
+  description: |
+    Form3 rest api test
+  version: 1.0.1
+  title: Form3
+tags:
+  - name: payment
+    description: Payment related stuff
+components:
+  schemas:
+    partyInfo:
+      type: object
+      properties:
+        account_name:
+          type: string
+        account_number:
+          type: string
+        account_number_code:
+          type: string
+        account_type:
+          type: integer
+        address:
+          type: string
+        bank_id:
+          type: string
+        bank_id_code:
+          type: string
+        name:
+          type: string
+    charge:
+      type: object
+      properties:
+        amount:
+          type: string
+        currency:
+          type: string
+    Payment:
+      type: object
+      properties:
+        type:
+          type: string
+          default: "Payment"
+        id:
+          type: string
+        version:
+          type: integer
+        organisation_id:
+          type: string
+        attributes:
+          type: object
+          properties:
+            amount:
+              type: string
+            beneficiary_party:
+              $ref: "#/components/schemas/partyInfo"
+            debtor_party:
+              $ref: "#/components/schemas/partyInfo"
+            sponsor_party:
+              $ref: "#/components/schemas/partyInfo"
+            currency:
+              type: string
+            end_to_end_reference:
+              type: string
+            numeric_reference:
+              type: string
+            payment_id:
+              type: string
+            payment_purpose:
+              type: string
+            payment_scheme:
+              type: string
+            payment_type:
+              type: string
+            processing_date:
+              type: string
+            reference:
+              type: string
+            scheme_payment_sub_type:
+              type: string
+            scheme_payment_type:
+              type: string
+            fx:
+              type: object
+              properties:
+                contract_reference:
+                  type: string
+                exchange_rate:
+                  type: string
+                original_amount:
+                  type: string
+                original_currency:
+                  type: string
+            charges_information:
+              type: object
+              properties:
+                bearer_code:
+                  type: string
+                receiver_charges_amount:
+                  type: string
+                receiver_charges_currency:
+                  type: string
+                sender_charges:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/charge"
+  requestBodies:
+    Payment:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Payment'
+      description: Payment object that needs to be added
+      required: true
+
+paths:
+  /payment:
+    post:
+      tags:
+        - payment
+      summary: Add a new payment
+      requestBody:
+        $ref: '#/components/requestBodies/Payment'
+      responses:
+        405:
+          description: Invalid data
+    delete:
+      tags:
+        - payment
+      parameters:
+        - name: id
+          in: path
+          description: Delete Payment resource by id
+          required: true
+          schema:
+            type: string
+      responses:
+        400:
+          description: Invalid ID supplied
+        404:
+          description: Payment not found
+
+  /payment/{id}:
+    get:
+      tags:
+        - payment
+      parameters:
+        - name: id
+          in: path
+          description: Get Payment resource by id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Payment"
